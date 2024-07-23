@@ -1,2 +1,6 @@
 crewai
+crewai_tools
 langchain
+requests
+beautifulsoup4
+pandas
