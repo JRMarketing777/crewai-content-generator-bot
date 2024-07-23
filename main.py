@@ -6,9 +6,20 @@ from tasks.summary_tasks import summary_task
 from agents.researcher import researcher
 from agents.analyzer import analyzer
 from agents.summarizer import summarizer
+from transformers import pipeline
 
-# Set your OpenAI API key
-os.environ["OPENAI_API_KEY"] = "your-openai-api-key"
+# Install Hugging Face Transformers if not already installed
+os.system('pip install transformers')
+
+# Set up the Hugging Face summarization model
+summarizer_model = pipeline("summarization")
+
+# Example function to summarize text using Hugging Face
+def summarize_text(text):
+    return summarizer_model(text, max_length=130, min_length=30, do_sample=False)[0]['summary_text']
+
+# Modify the summarizer agent to use the new summarization function
+summarizer.summarize = summarize_text
 
 # Create the Crew
 crew = Crew(
