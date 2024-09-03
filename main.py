@@ -1,4 +1,6 @@
 import os
+import openai
+from dotenv import load_dotenv
 from crewai import Crew, Process
 from tasks.research_tasks import research_task
 from tasks.analysis_tasks import analysis_task
@@ -6,17 +8,22 @@ from tasks.summary_tasks import summary_task
 from agents.researcher import researcher
 from agents.analyzer import analyzer
 from agents.summarizer import summarizer
-from transformers import pipeline
 
-# Install Hugging Face Transformers if not already installed
-os.system('pip install transformers')
+# Load environment variables from .env file
+load_dotenv()
 
-# Set up the Hugging Face summarization model
-summarizer_model = pipeline("summarization")
+# Access API key from environment variable
+openai.api_key = os.environ.get("OPENAI_API_KEY")
 
-# Example function to summarize text using Hugging Face
+# Example function to summarize text using the ChatGPT API
 def summarize_text(text):
-    return summarizer_model(text, max_length=130, min_length=30, do_sample=False)[0]['summary_text']
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt="Summarize the following text:\n" + text,
+        max_tokens=130,
+        temperature=0.5
+    )
+    return response.choices[0].text
 
 # Modify the summarizer agent to use the new summarization function
 summarizer.summarize = summarize_text
